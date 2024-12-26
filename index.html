@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <!--Fortune Royale-->
+    <title>playblackjack.io</title>
+    <link rel="icon" type="image/x-icon" href="/fav.png/">
+</head>
+<body>
+    <div id="game-container">
+        <h1>Blackjack Game</h1>
+        <div id="rules-container">
+            <button id="rules-toggle-btn" onclick="toggleRules()">Toggle Rules</button>
+            <div id="rules">
+              <h2>Rules</h2>
+              <p>1. The goal of blackjack is to beat the dealer's hand without going over 21.</p>
+              <p>2. Face cards are worth 10. Aces are worth 1 or 11, whichever makes a better hand.</p>
+              <p>3. Each player starts with two cards, and one of the dealer's cards is hidden.</p>
+              <p>4. Click 'Hit' to get another card and 'Stand' to stop.</p>
+              <p>5. The dealer will reveal their hidden card and must hit until the value reaches 17 or higher.</p>
+              <p>6. If you go over 21, you bust, and the dealer wins.</p>
+              <p>7. If the dealer busts, and you don't, you win.</p>
+              <p>8. If you and the dealer both don't bust, whoever is closer to 21 wins.</p>
+            </div>
+        </div>
+        <div id="dealer-area" class="playing-area">
+            <h2>Dealer's Hand</h2>
+            <div id="dealer-hand" class="hand"></div>
+        </div>
+        <div id="player-area" class="playing-area">
+            <h2>Player's Hand</h2>
+            <div id="player-hand" class="hand"></div>
+            <div id="bet-container">
+                <span id="player-chips">Chips: 10000</span>
+                <button class="bet-btn" data-value="5" onclick="placeBet(5)">5</button>
+                <button class="bet-btn" data-value="25" onclick="placeBet(25)">25</button>
+                <button class="bet-btn" data-value="50" onclick="placeBet(50)">50</button>
+                <button class="bet-btn" data-value="100" onclick="placeBet(100)">100</button>
+                <button class="bet-btn" data-value="500" onclick="placeBet(500)">500</button>
+                <button class="bet-btn" data-value="1000" onclick="placeBet(1000)">1000</button>
+            </div>
+        </div>
+        <div id="buttons">
+            <button class="btn" id="deal-btn">Deal</button>
+            <button class="btn" id="hit-btn">Hit</button>
+            <button class="btn" id="stand-btn">Stand</button>
+        </div>
+    </div>
+
+    <div id="result-modal" class="modal">
+        <div id="modal-content" class="modal-content">
+            <p id="result-message"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
