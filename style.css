@@ -16,6 +16,22 @@ body {
     background-color: #075e54;
 }
 
+.hand-value {
+    font-size: 18px;
+    color: #333;
+    margin-top: 10px;
+}
+
+#betAmountLabel {
+    font-weight: bold;
+    padding: 5px;
+    background-color: transparent;
+    color: white;
+    font-size: 13px;
+    border: 2px solid white;
+    border-radius: 10px;
+}
+
 .hand span {
     display: inline-block;
     width: 80px;
@@ -101,7 +117,8 @@ body {
 .modal-btn-container {
     display: flex;
     justify-content: center;
-    margin-top: 20px; /* Adjust the margin as needed */
+    margin-top: 20px;
+    /* Adjust the margin as needed */
 }
 
 .modal-btn {
@@ -166,7 +183,8 @@ body {
 }
 
 .card-symbol {
-    font-size: 24px; /* Adjust the font size as desired */
+    font-size: 24px;
+    /* Adjust the font size as desired */
     position: absolute;
     top: 50%;
     left: 50%;

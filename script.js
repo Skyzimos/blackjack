@@ -48,6 +48,7 @@ function createDeck() {
             deck.push({ suit, value });
         }
     }
+    console.log(deck)
     return deck;
 }
 
@@ -71,6 +72,7 @@ function deal() {
     betAmount = 5;
     playerChips -= 5;
 
+    setBet(betAmount);
     displayHands();
     toggleButtons(true);
     saveGameState();
@@ -79,6 +81,7 @@ function deal() {
 
 function hit() {
     playerHand.push(drawCard());
+    toggleButtons(false, true);
 
     if (calculateHandValue(playerHand) > 21 && !gameEnded) {
         gameEnded = true;
@@ -127,14 +130,23 @@ function displayHands() {
     playerHandDiv.innerHTML = "";
     dealerHandDiv.innerHTML = "";
 
+    // Display player's hand cards
     for (let card of playerHand) {
         displayCard(card, playerHandDiv);
     }
 
+    // Display dealer's hand cards
     for (let card of dealerHand) {
         displayCard(card, dealerHandDiv);
     }
+
+    // Update the player's hand value
+    document.getElementById('player-hand-value').textContent = `Hand Value: ${calculateHandValue(playerHand)}`;
+
+    // Update the dealer's hand value
+    document.getElementById('dealer-hand-value').textContent = `Hand Value: ${calculateHandValue(dealerHand)}`;
 }
+
 
 function displayCard(card, handDiv) {
     const cardDiv = document.createElement('span');
@@ -144,22 +156,32 @@ function displayCard(card, handDiv) {
 }
 
 function calculateHandValue(hand) {
-    let sum = 0;
-    let hasAce = false;
+    let total = 0;
+    let aces = 0;
 
-    for (let card of hand) {
-        sum += getValue(card.value);
+    // Loop through each card in the hand
+    hand.forEach(card => {
+        console.log(card)
         if (card.value === 'A') {
-            hasAce = true;
+            aces++;
+            total += 11;  // Count Ace as 11 initially
+        } else if (['J', 'Q', 'K'].includes(card.value)) {
+            total += 10;  // Face cards count as 10
+        } else {
+            console.log(card)
+            total += parseInt(card.value);  // Number cards add their value
         }
+    });
+
+    // Adjust for Aces if total goes over 21
+    if (total > 21 && aces > 0) {
+        total -= 10;  // Convert one Ace from 11 to 1
+        aces--;
     }
 
-    if (hasAce && sum + 10 <= 21) {
-        sum += 10; // Treat Ace as 11 if it doesn't bust the hand
-    }
-
-    return sum;
+    return total;
 }
+
 
 function getValue(cardValue) {
     return isNaN(cardValue) ? 10 : parseInt(cardValue);
@@ -175,23 +197,28 @@ function endGame(message, win) {
         playerChips += betAmount * 2.5; // Win double the bet amount
         removeModalButtons()
         showModal(`You won ${betAmount * 2.5} chips!`, "Play Again", () => {
-          resetGame();
+            resetGame();
         }, "Leave", () => {
-          closeModal();
-          open(location, '_self').close();
+            closeModal();
+            open(location, '_self').close();
         });
     } else {
         removeModalButtons()
         showModal(`You lost ${betAmount} chips.`, "Play Again", () => {
-          resetGame();
+            resetGame();
         }, "Leave", () => {
-          closeModal();
-          open(location, '_self').close();
+            closeModal();
+            open(location, '_self').close();
         });
     }
 }
 
-function toggleButtons(enable) {
+function toggleButtons(enable, justBetButtons) {
+    if (justBetButtons) {
+        betBtns.forEach(btn => btn.disabled = !enable);
+        return;
+    }
+
     dealBtn.disabled = !enable;
     hitBtn.disabled = !enable;
     standBtn.disabled = !enable;
@@ -206,7 +233,7 @@ function closeModal() {
 function resetGame() {
     updateChipsDisplay();
     playerHand = [];
-    dealerHand = []; 
+    dealerHand = [];
     deal();
 }
 
@@ -232,17 +259,41 @@ function toggleRules() {
     debounce = true;
 
     if (toggled) {
-      rulesContainer.style.display = "block";
-      toggled = false;
-      setTimeout(() => {
-        debounce = false;
-      }, 1000)
+        rulesContainer.style.display = "block";
+        toggled = false;
+        setTimeout(() => {
+            debounce = false;
+        }, 1000)
     } else {
-      rulesContainer.style.display = "none";
-      toggled = true;
-      setTimeout(() => {
-        debounce = false;
-      }, 1000)
+        rulesContainer.style.display = "none";
+        toggled = true;
+        setTimeout(() => {
+            debounce = false;
+        }, 1000)
+    }
+}
+
+let currentBet = 0;
+
+function updateBetAmount(newBet) {
+    currentBet = newBet;
+    document.getElementById('betAmountLabel').innerText = `Bet Amount: $${currentBet}`;
+}
+
+function increaseBet(amount) {
+    currentBet += amount;
+    updateBetAmount(currentBet);
+}
+
+function setBet(amount) {
+    currentBet = amount;
+    updateBetAmount(currentBet);
+}
+
+function decreaseBet(amount) {
+    if (currentBet - amount >= 0) {
+        currentBet -= amount;
+        updateBetAmount(currentBet);
     }
 }
 
@@ -250,14 +301,15 @@ function placeBet(amount) {
     if (betDebounce) return;
     betDebounce = true;
     if (!gameEnded && playerChips >= amount) {
-        betAmount += (parseInt(amount) - 5);
-        playerChips -= (parseInt(amount) - 5);
+        betAmount += (parseInt(amount));
+        playerChips -= (parseInt(amount));
+        increaseBet((parseInt(amount)))
         saveGameState();
         updateChipsDisplay();
     }
 
     setTimeout(() => {
-      betDebounce = false;
+        betDebounce = false;
     }, 1000)
 }
 
@@ -283,6 +335,7 @@ function loadGameState() {
     deck = JSON.parse(localStorage.getItem('deck')) || [];
     playerHand = JSON.parse(localStorage.getItem('playerHand')) || [];
     dealerHand = JSON.parse(localStorage.getItem('dealerHand')) || [];
+    setBet(betAmount);
     updateChipsDisplay();
     displayHands();
 
@@ -294,13 +347,13 @@ function loadGameState() {
     } else {
         // Player still has chips, ask if they want to continue the previous round
         if (previousRound !== false) {
-          showModal("Do you want to continue the previous round?", "Continue", () => {
-              closeModal();
-          }, "New Round", () => {
-              resetGame();
-          });
+            showModal("Do you want to continue the previous round?", "Continue", () => {
+                closeModal();
+            }, "New Round", () => {
+                resetGame();
+            });
         } else {
-          resetGame();
+            resetGame();
         }
     }
 }

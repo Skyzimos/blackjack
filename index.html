@@ -28,10 +28,14 @@
         <div id="dealer-area" class="playing-area">
             <h2>Dealer's Hand</h2>
             <div id="dealer-hand" class="hand"></div>
+            <span id="dealer-hand-value" class="hand-value">Hand Value: 0</span> <!-- Add this -->
         </div>
         <div id="player-area" class="playing-area">
             <h2>Player's Hand</h2>
             <div id="player-hand" class="hand"></div>
+            <span id="player-hand-value" class="hand-value">Hand Value: 0</span> <!-- Add this -->
+            <label for="betAmount" id="betAmountLabel">Bet Amount: $0</label>
+
             <div id="bet-container">
                 <span id="player-chips">Chips: 10000</span>
                 <button class="bet-btn" data-value="5" onclick="placeBet(5)">5</button>
